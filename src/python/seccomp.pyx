@@ -30,6 +30,7 @@ by application developers.
 
 Filter action values:
     KILL - kill the process
+    LOG - allow the syscall to be executed after the action has been logged
     ALLOW - allow the syscall to execute
     TRAP - a SIGSYS signal will be thrown
     ERRNO(x) - syscall will return (x)
@@ -95,6 +96,7 @@ def c_str(string):
 
 KILL = libseccomp.SCMP_ACT_KILL
 TRAP = libseccomp.SCMP_ACT_TRAP
+LOG = libseccomp.SCMP_ACT_LOG
 ALLOW = libseccomp.SCMP_ACT_ALLOW
 def ERRNO(int errno):
     """The action ERRNO(x) means that the syscall will return (x).
@@ -514,7 +516,7 @@ cdef class SyscallFilter:
         """ Add a new rule to filter.
 
         Arguments:
-        action - the rule action: KILL, TRAP, ERRNO(), TRACE(), or ALLOW
+        action - the rule action: KILL, TRAP, ERRNO(), TRACE(), LOG, or ALLOW
         syscall - the syscall name or number
         args - variable number of Arg objects
 
@@ -596,7 +598,7 @@ cdef class SyscallFilter:
         """ Add a new rule to filter.
 
         Arguments:
-        action - the rule action: KILL, TRAP, ERRNO(), TRACE(), or ALLOW
+        action - the rule action: KILL, TRAP, ERRNO(), TRACE(), LOG, or ALLOW
         syscall - the syscall name or number
         args - variable number of Arg objects
 
