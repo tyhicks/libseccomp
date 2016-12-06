@@ -669,7 +669,10 @@ int db_action_valid(uint32_t action)
 		return 0;
 	else if (action == SCMP_ACT_TRACE(action & 0x0000ffff))
 		return 0;
-	else if (action == SCMP_ACT_ALLOW)
+	else if (action == SCMP_ACT_LOG) {
+		if (sys_chk_seccomp_action(action) == 1)
+			return 0;
+	} else if (action == SCMP_ACT_ALLOW)
 		return 0;
 
 	return -EINVAL;
