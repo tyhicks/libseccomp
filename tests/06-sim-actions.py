@@ -30,8 +30,10 @@ import util
 from seccomp import *
 
 def test(args):
+    set_attr(Attr.CTL_KCHECKACTS, 0)
     f = SyscallFilter(KILL)
     f.add_rule(ALLOW, "read")
+    f.add_rule(LOG, "rt_sigreturn")
     f.add_rule(ERRNO(errno.EPERM), "write")
     f.add_rule(TRAP, "close")
     f.add_rule(TRACE(1234), "open")
