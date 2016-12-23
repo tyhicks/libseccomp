@@ -78,7 +78,8 @@ check_PROGRAMS = \
 	36-sim-ipc_syscalls \
 	37-sim-ipc_syscalls_be \
 	38-basic-pfc_coverage \
-	39-basic-action_valid
+	39-basic-action_valid \
+	40-sim-log
 
 EXTRA_DIST_TESTPYTHON = \
 	util.py \
@@ -119,7 +120,8 @@ EXTRA_DIST_TESTPYTHON = \
 	35-sim-negative_one.py \
 	36-sim-ipc_syscalls.py \
 	37-sim-ipc_syscalls_be.py \
-	39-basic-action_valid.py
+	39-basic-action_valid.py \
+	40-sim-log.py
 
 EXTRA_DIST_TESTCFGS = \
 	01-sim-allow.tests \
@@ -160,7 +162,8 @@ EXTRA_DIST_TESTCFGS = \
 	36-sim-ipc_syscalls.tests \
 	37-sim-ipc_syscalls_be.tests \
 	38-basic-pfc_coverage.tests \
-	39-basic-action_valid.tests
+	39-basic-action_valid.tests \
+	40-sim-log.tests
 
 EXTRA_DIST_TESTSCRIPTS = \
 	38-basic-pfc_coverage.sh 38-basic-pfc_coverage.pfc
