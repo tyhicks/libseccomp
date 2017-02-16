@@ -98,6 +98,40 @@ supported:
 }
 
 /**
+ * Check to see if a seccomp action is supported
+ * @param action the seccomp action
+ *
+ * This function checks to see if a seccomp action is supported by the system.
+ * If the action is supported one is returned, zero if unsupported, negative
+ * values on error. A return code of -EOPNOTSUPP indicates that the kernel is
+ * not new enough to support action queries.
+ */
+int sys_chk_seccomp_action(uint32_t action)
+{
+	int rc;
+
+	if (sys_chk_seccomp_syscall() == 0) {
+		/* seccomp(2) is not supported */
+		return -EOPNOTSUPP;
+	}
+
+	rc = syscall(_nr_seccomp, SECCOMP_GET_ACTION_AVAIL, 0, &action);
+	if (rc == -1) {
+		if (errno == EINVAL) {
+			/* SECCOMP_GET_ACTION_AVAIL op is not supported */
+			return -EOPNOTSUPP;
+		} else if (errno == EOPNOTSUPP) {
+			/* the action is not supported */
+			return 0;
+		}
+
+		return -errno;
+	}
+
+	return 1;
+}
+
+/**
  * Check to see if a seccomp() flag is supported
  * @param flag the seccomp() flag
  *
