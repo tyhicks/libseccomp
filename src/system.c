@@ -98,6 +98,71 @@ supported:
 }
 
 /**
+ * Check to see if a seccomp action can be assumed to be supported
+ * @param action the seccomp action
+ *
+ * This function checks to see if a seccomp action is one of the actions that
+ * was available at libseccomp's inception. One is returned if the action is in
+ * the assumed set, zero otherwise.
+ *
+ */
+static int _sys_chk_seccomp_assumed_action(uint32_t action)
+{
+	if (action == SCMP_ACT_KILL)
+		return 1;
+	else if (action == SCMP_ACT_TRAP)
+		return 1;
+	else if ((action == SCMP_ACT_ERRNO(action & 0x0000ffff)) &&
+		 ((action & 0x0000ffff) < MAX_ERRNO))
+		return 1;
+	else if (action == SCMP_ACT_TRACE(action & 0x0000ffff))
+		return 1;
+	else if (action == SCMP_ACT_ALLOW)
+		return 1;
+
+	return 0;
+}
+
+/**
+ * Check to see if a seccomp action is supported
+ * @param action the seccomp action
+ *
+ * This function checks to see if a seccomp action is supported by the system.
+ * If the action is supported one is returned, zero if unsupported, negative
+ * values on error.
+ *
+ */
+int sys_chk_seccomp_action(uint32_t action)
+{
+	int rc;
+
+	if (_sys_chk_seccomp_assumed_action(action) == 1)
+		return 1;
+
+	if (sys_chk_seccomp_syscall() == 0)
+		/* seccomp() is not supported so it is safe to assume that
+		 * there are no new actions supported */
+		return 0;
+
+	rc = syscall(_nr_seccomp, SECCOMP_GET_ACTION_AVAIL, 0, &action);
+	if (rc == -1) {
+		if (errno == EINVAL) {
+			/* SECCOMP_GET_ACTION_AVAIL is not supported so it is
+			 * safe to assume that there are no new actions
+			 * supported */
+			return 0;
+		} else if (errno == EOPNOTSUPP) {
+			/* the action is not supported */
+			return 0;
+		}
+
+		return -errno;
+	}
+
+	return 1;
+}
+
+/**
  * Check to see if a seccomp() flag is supported
  * @param flag the seccomp() flag
  *

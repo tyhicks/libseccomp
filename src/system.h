@@ -102,6 +102,9 @@ typedef struct sock_filter bpf_instr_raw;
 #ifndef SECCOMP_SET_MODE_FILTER
 #define SECCOMP_SET_MODE_FILTER		1
 #endif
+#ifndef SECCOMP_GET_ACTION_AVAIL
+#define SECCOMP_GET_ACTION_AVAIL	2
+#endif
 
 /* flags for the seccomp() syscall */
 #ifndef SECCOMP_FILTER_FLAG_TSYNC
@@ -115,6 +118,7 @@ typedef struct sock_filter bpf_instr_raw;
 #endif
 
 int sys_chk_seccomp_syscall(void);
+int sys_chk_seccomp_action(uint32_t action);
 int sys_chk_seccomp_flag(int flag);
 
 int sys_filter_load(const struct db_filter_col *col);
