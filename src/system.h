@@ -110,6 +110,9 @@ typedef struct sock_filter bpf_instr_raw;
 #ifndef SECCOMP_FILTER_FLAG_KILL_PROCESS
 #define SECCOMP_FILTER_FLAG_KILL_PROCESS	2
 #endif
+#ifndef SECCOMP_FILTER_FLAG_LOG
+#define SECCOMP_FILTER_FLAG_LOG		4
+#endif
 
 int sys_chk_seccomp_syscall(void);
 int sys_chk_seccomp_flag(int flag);

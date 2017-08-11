@@ -141,6 +141,8 @@ int sys_chk_seccomp_flag(int flag)
 		return sys_chk_seccomp_syscall();
 	case SECCOMP_FILTER_FLAG_KILL_PROCESS:
 		return _sys_chk_seccomp_flag(SECCOMP_FILTER_FLAG_KILL_PROCESS);
+	case SECCOMP_FILTER_FLAG_LOG:
+		return _sys_chk_seccomp_flag(SECCOMP_FILTER_FLAG_LOG);
 	}
 
 	return -EOPNOTSUPP;
@@ -179,6 +181,8 @@ int sys_filter_load(const struct db_filter_col *col)
 			flgs |= SECCOMP_FILTER_FLAG_TSYNC;
 		if (col->attr.kill_proc_enable)
 			flgs |= SECCOMP_FILTER_FLAG_KILL_PROCESS;
+		if (col->attr.log_enable)
+			flgs |= SECCOMP_FILTER_FLAG_LOG;
 		rc = syscall(_nr_seccomp, SECCOMP_SET_MODE_FILTER, flgs, prgm);
 		if (rc > 0 && col->attr.tsync_enable)
 			/* always return -ESRCH if we fail to sync threads */

@@ -141,6 +141,8 @@ struct db_filter_attr {
 	uint32_t api_tskip;
 	/* SECCOMP_FILTER_FLAG_KILL_PROCESS related attributes */
 	uint32_t kill_proc_enable;
+	/* SECCOMP_FILTER_FLAG_LOG related attributes */
+	uint32_t log_enable;
 };
 
 struct db_filter {
