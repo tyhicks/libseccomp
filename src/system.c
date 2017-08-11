@@ -101,6 +101,34 @@ supported:
  * Check to see if a seccomp() flag is supported
  * @param flag the seccomp() flag
  *
+ * This function attempts to use seccomp() to check if the specified seccomp()
+ * flag is supported. If the flag is supported one is returned, zero
+ * otherwise.
+ */
+static int _sys_chk_seccomp_flag(int flag)
+{
+	int rc;
+
+	if (!sys_chk_seccomp_syscall())
+		goto unsupported;
+
+	/* this is an invalid call because the last argument is NULL, but
+	 * depending on the errno value of EFAULT we can guess if the
+	 * filter flag is supported or not */
+	rc = syscall(_nr_seccomp, SECCOMP_SET_MODE_FILTER, flag, NULL);
+	if (rc < 0 && errno == EFAULT)
+		goto supported;
+
+unsupported:
+	return 0;
+supported:
+	return 1;
+}
+
+/**
+ * Check to see if a seccomp() flag is supported
+ * @param flag the seccomp() flag
+ *
  * This function checks to see if a seccomp() flag is supported by the system.
  * If the flag is supported one is returned, zero if unsupported, negative
  * values on error.
@@ -110,7 +138,7 @@ int sys_chk_seccomp_flag(int flag)
 {
 	switch (flag) {
 	case SECCOMP_FILTER_FLAG_TSYNC:
-		return sys_chk_seccomp_syscall();
+		return _sys_chk_seccomp_flag(flag);
 	}
 
 	return -EOPNOTSUPP;
