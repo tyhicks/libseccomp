@@ -174,7 +174,7 @@ int sys_filter_load(const struct db_filter_col *col)
 	if (sys_chk_seccomp_syscall() == 1) {
 		int flgs = 0;
 		if (col->attr.tsync_enable)
-			flgs = SECCOMP_FILTER_FLAG_TSYNC;
+			flgs |= SECCOMP_FILTER_FLAG_TSYNC;
 		rc = syscall(_nr_seccomp, SECCOMP_SET_MODE_FILTER, flgs, prgm);
 		if (rc > 0 && col->attr.tsync_enable)
 			/* always return -ESRCH if we fail to sync threads */
