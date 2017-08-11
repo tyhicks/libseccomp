@@ -792,6 +792,9 @@ int db_col_attr_get(const struct db_filter_col *col,
 	case SCMP_FLTATR_API_TSKIP:
 		*value = col->attr.api_tskip;
 		break;
+	case SCMP_FLTATR_CTL_KILL_PROCESS:
+		*value = col->attr.kill_proc_enable;
+		break;
 	default:
 		rc = -EEXIST;
 		break;
@@ -841,6 +844,17 @@ int db_col_attr_set(struct db_filter_col *col,
 		break;
 	case SCMP_FLTATR_API_TSKIP:
 		col->attr.api_tskip = (value ? 1 : 0);
+		break;
+	case SCMP_FLTATR_CTL_KILL_PROCESS:
+		rc = sys_chk_seccomp_flag(SECCOMP_FILTER_FLAG_KILL_PROCESS);
+		if (rc == 1) {
+			/* supported */
+			rc = 0;
+			col->attr.kill_proc_enable = (value ? 1 : 0);
+		} else if (rc == 0) {
+			/* unsupported */
+			rc = -EOPNOTSUPP;
+		}
 		break;
 	default:
 		rc = -EEXIST;

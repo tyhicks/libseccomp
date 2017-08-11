@@ -274,6 +274,7 @@ cdef class Attr:
     CTL_NNP = libseccomp.SCMP_FLTATR_CTL_NNP
     CTL_TSYNC = libseccomp.SCMP_FLTATR_CTL_TSYNC
     API_TSKIP = libseccomp.SCMP_FLTATR_API_TSKIP
+    CTL_KILL_PROCESS = libseccomp.SCMP_FLTATR_CTL_KILL_PROCESS
 
 cdef class Arg:
     """ Python object representing a SyscallFilter syscall argument.
