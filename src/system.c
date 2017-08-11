@@ -107,6 +107,30 @@ void sys_set_seccomp_syscall(bool enable)
 }
 
 /**
+ * Check to see if a seccomp() flag is supported by the kernel
+ * @param flag the seccomp() flag
+ *
+ * This function checks to see if a seccomp() flag is supported by the kernel.
+ * Return one if the flag is supported, zero if unsupported, negative values
+ * on error.
+ *
+ */
+int _sys_chk_seccomp_flag_kernel(int flag)
+{
+	if (sys_chk_seccomp_syscall() == 0)
+		return 0;
+
+	/* this is an invalid call because the last argument is NULL, but
+	 * depending on the errno value of EFAULT we can guess if the filter
+	 * flag is supported or not */
+	 if (syscall(_nr_seccomp, SECCOMP_SET_MODE_FILTER, flag, NULL) >= 0 ||
+	     errno != EFAULT)
+		 return -errno;
+
+	 return 1;
+}
+
+/**
  * Check to see if a seccomp() flag is supported
  * @param flag the seccomp() flag
  *
@@ -117,18 +141,15 @@ void sys_set_seccomp_syscall(bool enable)
  */
 int sys_chk_seccomp_flag(int flag)
 {
-	int rc;
-
 	switch (flag) {
 	case SECCOMP_FILTER_FLAG_TSYNC:
-		if (_support_seccomp_flag_tsync < 0) {
-			rc = sys_chk_seccomp_syscall();
-			_support_seccomp_flag_tsync = (rc == 1 ? 1 : 0);
-		}
+		if (_support_seccomp_flag_tsync < 0)
+			_support_seccomp_flag_tsync = _sys_chk_seccomp_flag_kernel(flag);
+
 		return _support_seccomp_flag_tsync;
 	}
 
-	return -EOPNOTSUPP;
+	return 0;
 }
 
 /**
