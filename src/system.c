@@ -172,6 +172,7 @@ int sys_chk_seccomp_flag(int flag)
 {
 	switch (flag) {
 	case SECCOMP_FILTER_FLAG_TSYNC:
+	case SECCOMP_FILTER_FLAG_LOG:
 		return _sys_chk_seccomp_flag(flag);
 	}
 
@@ -209,6 +210,8 @@ int sys_filter_load(const struct db_filter_col *col)
 		int flgs = 0;
 		if (col->attr.tsync_enable)
 			flgs = SECCOMP_FILTER_FLAG_TSYNC;
+		if (col->attr.log_enable)
+			flgs |= SECCOMP_FILTER_FLAG_LOG;
 		rc = syscall(_nr_seccomp, SECCOMP_SET_MODE_FILTER, flgs, prgm);
 		if (rc > 0 && col->attr.tsync_enable)
 			/* always return -ESRCH if we fail to sync threads */

@@ -110,6 +110,14 @@ application's usage of libseccomp with a kernel that may not be new enough to
 support your desired actions. Defaults to on (
 .I value
 == 1).
+.TP
+.B SCMP_FLTATR_CTL_LOG
+A flag to specify if the kernel should log all filter actions taken except for
+the
+.BR SCMP_ACT_ALLOW
+action. Defaults to off (
+.I value
+== 0).
 .\" //////////////////////////////////////////////////////////////////////////
 .SH RETURN VALUE
 .\" //////////////////////////////////////////////////////////////////////////

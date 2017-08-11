@@ -47,6 +47,13 @@ def test():
     f.set_attr(Attr.API_TSKIP, 0)
     if f.get_attr(Attr.API_TSKIP) != 0:
         raise RuntimeError("Failed getting Attr.API_TSKIP")
+    try:
+        set_attr(Attr.CTL_LOG, 0)
+    except ValueError:
+        pass
+    else:
+        if get_attr(Attr.CTL_LOG) != 1:
+            raise RuntimeError("Failed getting Attr.CTL_LOG")
 
 test()
 

@@ -785,6 +785,7 @@ int db_col_attr_valid(struct db_filter_col *col,
 	case SCMP_FLTATR_CTL_NNP:
 	case SCMP_FLTATR_CTL_TSYNC:
 	case SCMP_FLTATR_API_TSKIP:
+	case SCMP_FLTATR_CTL_LOG:
 		rc = db_col_valid(col);
 		break;
 	/* Global attributes require a NULL db_filter_col */
@@ -832,6 +833,9 @@ int db_col_attr_get(const struct db_filter_col *col,
 		break;
 	case SCMP_GLBATR_CTL_KCHECKACTS:
 		*value = _kcheckacts_enable;
+		break;
+	case SCMP_FLTATR_CTL_LOG:
+		*value = col->attr.log_enable;
 		break;
 	default:
 		rc = -EEXIST;
@@ -885,6 +889,17 @@ int db_col_attr_set(struct db_filter_col *col,
 		break;
 	case SCMP_GLBATR_CTL_KCHECKACTS:
 		_kcheckacts_enable = (value ? 1 : 0);
+		break;
+	case SCMP_FLTATR_CTL_LOG:
+		rc = sys_chk_seccomp_flag(SECCOMP_FILTER_FLAG_LOG);
+		if (rc == 1) {
+			/* supported */
+			rc = 0;
+			col->attr.log_enable = (value ? 1 : 0);
+		} else if (rc == 0) {
+			/* unsupported */
+			rc = -EOPNOTSUPP;
+		}
 		break;
 	default:
 		rc = -EEXIST;
