@@ -126,5 +126,7 @@ cdef extern from "seccomp.h":
     int seccomp_export_pfc(scmp_filter_ctx ctx, int fd)
     int seccomp_export_bpf(scmp_filter_ctx ctx, int fd)
 
+    int seccomp_action_valid(uint32_t action)
+
 # kate: syntax python;
 # kate: indent-mode python; space-indent on; indent-width 4; mixedindent off;

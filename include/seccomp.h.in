@@ -586,6 +586,15 @@ int seccomp_export_pfc(const scmp_filter_ctx ctx, int fd);
  */
 int seccomp_export_bpf(const scmp_filter_ctx ctx, int fd);
 
+/**
+ * Validate that the seccomp action is available in the kernel
+ * @param action the filter action
+ *
+ * This function validates that an action is supported by the kernel currently
+ * running. Returns zero if the action is valid, negative values on failure.
+ */
+int seccomp_action_valid(uint32_t action);
+
 /*
  * pseudo syscall definitions
  */

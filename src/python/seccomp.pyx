@@ -150,6 +150,23 @@ def resolve_syscall(arch, syscall):
     else:
         raise TypeError("Syscall must either be an int or str type")
 
+def action_valid(int action):
+    """ Validate an action.
+
+    Arguments:
+    action - the filter action
+
+    Description:
+    Validate the given action. Newer actions will be validated with the kernel
+    to verify that they're supported.
+    """
+    rc = libseccomp.seccomp_action_valid(action)
+    if rc == -errno.EINVAL:
+        raise ValueError("Invalid action")
+    if rc != 0:
+        raise RuntimeError(str.format("Library error (errno = {0})", rc))
+    return rc
+
 cdef class Arch:
     """ Python object representing the SyscallFilter architecture values.
 

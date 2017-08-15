@@ -448,3 +448,9 @@ API int seccomp_export_bpf(const scmp_filter_ctx ctx, int fd)
 
 	return 0;
 }
+
+/* NOTE - function header comment in include/seccomp.h */
+API int seccomp_action_valid(uint32_t action)
+{
+	return db_action_valid(action);
+}

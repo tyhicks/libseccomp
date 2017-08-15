@@ -1,0 +1,11 @@
+#
+# libseccomp regression test automation data
+#
+# Copyright (c) 2017 Canonical Ltd.
+# Author: Tyler Hicks <tyhicks@canonical.com>
+#
+
+test type: basic
+
+# Test command
+39-basic-action_valid
