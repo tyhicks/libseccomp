@@ -44,6 +44,8 @@
 #define _DB_PRI_MASK_USER		0x00FF0000
 #define _DB_PRI_USER(x)			(((x) << 16) & _DB_PRI_MASK_USER)
 
+static uint32_t _kcheckacts_enable = 1;
+
 /* private structure for tracking the state of the sub-tree "pruning" */
 struct db_prune_state {
 	bool prefix_exist;
@@ -762,6 +764,42 @@ int db_col_arch_exist(struct db_filter_col *col, uint32_t arch_token)
 }
 
 /**
+ * Validate a filter collection and attribute combination
+ * @param col the seccomp filter collection
+ * @param attr the attribute
+ *
+ * This function validates a seccomp filter collection and attribute
+ * combination. Filter attributes require a valid col and global attributes
+ * require a NULL col. Returns zero if the combination is valid, negative
+ * values on failure.
+ */
+int db_col_attr_valid(struct db_filter_col *col,
+		      enum scmp_filter_attr attr)
+{
+	int rc;
+
+	switch (attr) {
+	/* Filter attributes require a valid db_filter_col */
+	case SCMP_FLTATR_ACT_DEFAULT:
+	case SCMP_FLTATR_ACT_BADARCH:
+	case SCMP_FLTATR_CTL_NNP:
+	case SCMP_FLTATR_CTL_TSYNC:
+	case SCMP_FLTATR_API_TSKIP:
+		rc = db_col_valid(col);
+		break;
+	/* Global attributes require a NULL db_filter_col */
+	case SCMP_GLBATR_CTL_KCHECKACTS:
+		rc = col == NULL ? 0 : -EINVAL;
+		break;
+	default:
+		rc = -EEXIST;
+		break;
+	}
+
+	return rc;
+}
+
+/**
  * Get a filter attribute
  * @param col the seccomp filter collection
  * @param attr the filter attribute
@@ -791,6 +829,9 @@ int db_col_attr_get(const struct db_filter_col *col,
 		break;
 	case SCMP_FLTATR_API_TSKIP:
 		*value = col->attr.api_tskip;
+		break;
+	case SCMP_GLBATR_CTL_KCHECKACTS:
+		*value = _kcheckacts_enable;
 		break;
 	default:
 		rc = -EEXIST;
@@ -841,6 +882,9 @@ int db_col_attr_set(struct db_filter_col *col,
 		break;
 	case SCMP_FLTATR_API_TSKIP:
 		col->attr.api_tskip = (value ? 1 : 0);
+		break;
+	case SCMP_GLBATR_CTL_KCHECKACTS:
+		_kcheckacts_enable = (value ? 1 : 0);
 		break;
 	default:
 		rc = -EEXIST;

@@ -2,7 +2,7 @@
 .\" //////////////////////////////////////////////////////////////////////////
 .SH NAME
 .\" //////////////////////////////////////////////////////////////////////////
-seccomp_attr_set, seccomp_attr_get \- Manage the seccomp filter attributes
+seccomp_attr_set, seccomp_attr_get \- Manage the seccomp attributes
 .\" //////////////////////////////////////////////////////////////////////////
 .SH SYNOPSIS
 .\" //////////////////////////////////////////////////////////////////////////
@@ -25,24 +25,35 @@ Link with \fI\-lseccomp\fP.
 .P
 The
 .BR seccomp_attr_set ()
-function sets the different seccomp filter attributes while the
+function sets the different seccomp attributes while the
 .BR seccomp_attr_get ()
-function fetches the filter attributes.  The seccomp filter attributes are
-tunable values that affect how the library behaves when generating and loading
-the seccomp filter into the kernel.  The attributes are reset to their default
-values whenever the filter is initialized or reset via
+function fetches the attributes.  The seccomp attributes are tunable values
+that affect how the library behaves when generating and loading the seccomp
+filter into the kernel.
+.P
+There are filter attributes, containing
+.BR FLTATR
+in their name, and there are global attributes, containing
+.BR GLBATR
+in their name.  The filter attributes are reset to their default values
+whenever the filter is initialized or reset via
 .BR seccomp_filter_init (3)
 or
-.BR seccomp_filter_reset (3).
+.BR seccomp_filter_reset (3)
+while the global attributes only change by calling
+.BR seccomp_attr_set (3).
 .P
 The filter context
 .I ctx
 is the value returned by the call to
-.BR seccomp_init (3).
+.BR seccomp_init (3)
+and it is required when operating on filter attributes. The
+.I ctx
+must be NULL when operating on global attributes.
 .P
 Valid
 .I attr
-values are as follows:
+values for filter attributes are as follows:
 .TP
 .B SCMP_FLTATR_ACT_DEFAULT
 The default filter action as specified in the call to
@@ -86,6 +97,19 @@ specific syscall invocations, see
 for more information.  Defaults to off (
 .I value
 == 0).
+.TP
+.B SCMP_GLBATR_CTL_KCHECKACTS
+A flag to control if the kernel should be queried when new actions
+(added after Linux kernel version 4.13) are used in functions such as
+.BR seccomp_init (3),
+.BR seccomp_rule_add (3),
+.BR seccomp_action_valid (3),
+etc. This may be useful when constructing a filter while running a kernel that
+is older than the kernel that will load the filter or when testing your
+application's usage of libseccomp with a kernel that may not be new enough to
+support your desired actions. Defaults to on (
+.I value
+== 1).
 .\" //////////////////////////////////////////////////////////////////////////
 .SH RETURN VALUE
 .\" //////////////////////////////////////////////////////////////////////////

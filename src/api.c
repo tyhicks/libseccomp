@@ -58,6 +58,20 @@ static int _ctx_valid(const scmp_filter_ctx *ctx)
 }
 
 /**
+ * Validate a filter context and attribute combination
+ * @param ctx the filter context
+ * @param attr the attribute
+ *
+ * Attempt to validate the provided filter context and attribute combination.
+ * Returns zero if the combination is valid, negative values on failure.
+ */
+static int _ctx_attr_valid(const scmp_filter_ctx *ctx,
+			   enum scmp_filter_attr attr)
+{
+	return db_col_attr_valid((struct db_filter_col *)ctx, attr);
+}
+
+/**
  * Validate a syscall number
  * @param syscall the syscall number
  *
@@ -212,7 +226,7 @@ API int seccomp_load(const scmp_filter_ctx ctx)
 API int seccomp_attr_get(const scmp_filter_ctx ctx,
 			 enum scmp_filter_attr attr, uint32_t *value)
 {
-	if (_ctx_valid(ctx))
+	if (_ctx_attr_valid(ctx, attr))
 		return -EINVAL;
 
 	return db_col_attr_get((const struct db_filter_col *)ctx, attr, value);
@@ -222,7 +236,7 @@ API int seccomp_attr_get(const scmp_filter_ctx ctx,
 API int seccomp_attr_set(scmp_filter_ctx ctx,
 			 enum scmp_filter_attr attr, uint32_t value)
 {
-	if (_ctx_valid(ctx))
+	if (_ctx_attr_valid(ctx, attr))
 		return -EINVAL;
 
 	return db_col_attr_set((struct db_filter_col *)ctx, attr, value);

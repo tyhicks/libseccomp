@@ -167,6 +167,41 @@ def action_valid(int action):
         raise RuntimeError(str.format("Library error (errno = {0})", rc))
     return rc
 
+def get_attr(attr):
+    """ Get an attribute value from the filter.
+
+    Arguments:
+    attr - the attribute, e.g. Attr.*
+
+    Description:
+    Lookup the given attribute in the filter and return the
+    attribute's value to the caller.
+    """
+    cdef uint32_t value = 0
+    rc = libseccomp.seccomp_attr_get(NULL, attr, <uint32_t *>&value)
+    if rc == -errno.EINVAL:
+        raise ValueError("Invalid attribute")
+    elif rc != 0:
+        raise RuntimeError(str.format("Library error (errno = {0})", rc))
+    return value
+
+def set_attr(attr, int value):
+    """ Set a filter attribute.
+
+    Arguments:
+    attr - the attribute, e.g. Attr.*
+    value - the attribute value
+
+    Description:
+    Lookup the given attribute in the filter and assign it the given
+    value.
+    """
+    rc = libseccomp.seccomp_attr_set(NULL, attr, value)
+    if rc == -errno.EINVAL:
+        raise ValueError("Invalid attribute")
+    elif rc != 0:
+        raise RuntimeError(str.format("Library error (errno = {0})", rc))
+
 cdef class Arch:
     """ Python object representing the SyscallFilter architecture values.
 
@@ -291,6 +326,7 @@ cdef class Attr:
     CTL_NNP = libseccomp.SCMP_FLTATR_CTL_NNP
     CTL_TSYNC = libseccomp.SCMP_FLTATR_CTL_TSYNC
     API_TSKIP = libseccomp.SCMP_FLTATR_API_TSKIP
+    CTL_KCHECKACTS = libseccomp.SCMP_GLBATR_CTL_KCHECKACTS
 
 cdef class Arg:
     """ Python object representing a SyscallFilter syscall argument.

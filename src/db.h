@@ -202,6 +202,9 @@ int db_col_merge(struct db_filter_col *col_dst, struct db_filter_col *col_src);
 
 int db_col_arch_exist(struct db_filter_col *col, uint32_t arch_token);
 
+int db_col_attr_valid(struct db_filter_col *col,
+		      enum scmp_filter_attr attr);
+
 int db_col_attr_get(const struct db_filter_col *col,
 		    enum scmp_filter_attr attr, uint32_t *value);
 int db_col_attr_set(struct db_filter_col *col,

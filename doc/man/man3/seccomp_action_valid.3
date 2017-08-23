@@ -22,7 +22,9 @@ The
 function validates that the given seccomp filter
 .I action
 is known to libseccomp and, in the case of newer actions, supported by the
-kernel that's currently running.
+kernel that's currently running. This function is affected by the
+.BR SCMP_GLBATR_CTL_KCHECKACTS
+attribute which will disable the kernel support check for newer actions.
 .\" //////////////////////////////////////////////////////////////////////////
 .SH RETURN VALUE
 .\" //////////////////////////////////////////////////////////////////////////
@@ -48,5 +50,6 @@ Tyler Hicks <tyhicks@canonical.com>
 .\" //////////////////////////////////////////////////////////////////////////
 .SH SEE ALSO
 .\" //////////////////////////////////////////////////////////////////////////
-.BR seccomp_init (3)
+.BR seccomp_init (3),
+.BR seccomp_attr_set (3)
 
