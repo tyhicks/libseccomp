@@ -20,6 +20,7 @@
  */
 
 #include <errno.h>
+#include <stdlib.h>
 
 #include <seccomp.h>
 
@@ -28,6 +29,10 @@
 int main(int argc, char *argv[])
 {
 	int rc;
+
+	rc = seccomp_attr_set(NULL, SCMP_GLBATR_CTL_KCHECKACTS, 0);
+	if (rc != 0)
+		goto out;
 
 	rc = seccomp_action_valid(SCMP_ACT_KILL);
 	if (rc != 0)
@@ -42,6 +47,10 @@ int main(int argc, char *argv[])
 		goto out;
 
 	rc = seccomp_action_valid(SCMP_ACT_TRACE(1234));
+	if (rc != 0)
+		goto out;
+
+	rc = seccomp_action_valid(SCMP_ACT_LOG);
 	if (rc != 0)
 		goto out;
 

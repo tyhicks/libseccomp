@@ -28,6 +28,8 @@ import util
 from seccomp import *
 
 def test():
+    set_attr(Attr.CTL_KCHECKACTS, 0)
+
     if action_valid(KILL) != 0:
         raise RuntimeError("Failed validating KILL")
 
@@ -39,6 +41,9 @@ def test():
 
     if action_valid(TRACE(1234)) != 0:
         raise RuntimeError("Failed validating TRACE")
+
+    if action_valid(LOG) != 0:
+        raise RuntimeError("Failed validating LOG")
 
     if action_valid(ALLOW) != 0:
         raise RuntimeError("Failed validating ALLOW")
