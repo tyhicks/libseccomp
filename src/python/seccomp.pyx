@@ -30,7 +30,7 @@ by application developers.
 
 Filter action values:
     KILL - kill the process
-    LOG - allow the syscall to be execute after the action has been logged
+    LOG - allow the syscall to be executed after the action has been logged
     ALLOW - allow the syscall to execute
     TRAP - a SIGSYS signal will be thrown
     ERRNO(x) - syscall will return (x)
