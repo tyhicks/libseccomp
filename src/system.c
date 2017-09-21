@@ -40,6 +40,7 @@
 
 static int _nr_seccomp = -1;
 static int _support_seccomp_syscall = -1;
+static int _support_seccomp_flag_tsync = -1;
 
 /**
  * Check to see if the seccomp() syscall is supported
@@ -98,22 +99,48 @@ supported:
 }
 
 /**
+ * XXX
+ */
+void sys_set_seccomp_syscall(bool enable)
+{
+	_support_seccomp_syscall = (enable ? 1 : 0);
+}
+
+/**
  * Check to see if a seccomp() flag is supported
  * @param flag the seccomp() flag
  *
  * This function checks to see if a seccomp() flag is supported by the system.
- * If the flag is supported one is returned, zero if unsupported, negative
- * values on error.
+ * Return one if the syscall is supported, zero if unsupported, negative values
+ * on error.
  *
  */
 int sys_chk_seccomp_flag(int flag)
 {
+	int rc;
+
 	switch (flag) {
 	case SECCOMP_FILTER_FLAG_TSYNC:
-		return sys_chk_seccomp_syscall();
+		if (_support_seccomp_flag_tsync < 0) {
+			rc = sys_chk_seccomp_syscall();
+			_support_seccomp_flag_tsync = (rc == 1 ? 1 : 0);
+		}
+		return _support_seccomp_flag_tsync;
 	}
 
 	return -EOPNOTSUPP;
+}
+
+/**
+ * XXX
+ */
+void sys_set_seccomp_flag(int flag, bool enable)
+{
+	switch (flag) {
+	case SECCOMP_FILTER_FLAG_TSYNC:
+		_support_seccomp_flag_tsync = (enable ? 1 : 0);
+		break;
+	}
 }
 
 /**

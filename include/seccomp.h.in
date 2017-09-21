@@ -275,6 +275,16 @@ struct scmp_arg_cmp {
 const struct scmp_version *seccomp_version(void);
 
 /**
+ * XXX
+ */
+const unsigned int seccomp_api_get(void);
+
+/**
+ * XXX
+ */
+int seccomp_api_set(unsigned int level);
+
+/**
  * Initialize the filter state
  * @param def_action the default filter action
  *

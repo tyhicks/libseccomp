@@ -44,6 +44,8 @@ const struct scmp_version library_version = {
 	.micro = SCMP_VER_MICRO,
 };
 
+unsigned int seccomp_api_level = 0;
+
 /**
  * Validate a filter context
  * @param ctx the filter context
@@ -75,10 +77,63 @@ static int _syscall_valid(const struct db_filter_col *col, int syscall)
 	return 0;
 }
 
+/**
+ * Update the API level
+ *
+ * XXX
+ */
+static void _seccomp_api_update(void)
+{
+	unsigned int level = 1;
+
+	/* if seccomp_api_level > 0 then it's already been set, we're done */
+	if (seccomp_api_level >= 1)
+		return;
+
+	/* NOTE: level 1 is the base level, start checking at 2 */
+
+	/* level 2 */
+	if (sys_chk_seccomp_syscall() &&
+	    sys_chk_seccomp_flag(SECCOMP_FILTER_FLAG_TSYNC))
+		level = 2;
+
+	/* update the stored api level */
+	seccomp_api_level = level;
+}
+
 /* NOTE - function header comment in include/seccomp.h */
 API const struct scmp_version *seccomp_version(void)
 {
 	return &library_version;
+}
+
+/* NOTE - function header comment in include/seccomp.h */
+API const unsigned int seccomp_api_get(void)
+{
+	/* update the api level, if needed */
+	_seccomp_api_update();
+
+	return seccomp_api_level;
+}
+
+/* NOTE - function header comment in include/seccomp.h */
+API int seccomp_api_set(unsigned int level)
+{
+	switch (level) {
+	case 1:
+		sys_set_seccomp_syscall(false);
+		sys_set_seccomp_flag(SECCOMP_FILTER_FLAG_TSYNC, false);
+		break;
+	case 2:
+		sys_set_seccomp_syscall(true);
+		sys_set_seccomp_flag(SECCOMP_FILTER_FLAG_TSYNC, true);
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	seccomp_api_level = level;
+	return 0;
 }
 
 /* NOTE - function header comment in include/seccomp.h */
